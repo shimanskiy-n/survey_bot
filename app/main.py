@@ -1,6 +1,8 @@
 import asyncio
 import logging
 
+from dotenv import load_dotenv
+
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -19,6 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 async def main() -> None:
+    # Подхватываем переменные из существующего `.env` (если он есть в рабочей директории).
+    load_dotenv()
     settings = load_settings()
     db = Database(settings.db_path)
 
@@ -28,7 +32,7 @@ async def main() -> None:
     )
     dp = Dispatcher(storage=MemoryStorage())
 
-    router = setup_handlers(db)
+    router = setup_handlers(db, admin_telegram_id=settings.admin_telegram_id)
     dp.include_router(router)
 
     logger.info("Бот запущен. Нажмите Ctrl+C для остановки.")
